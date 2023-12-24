@@ -1,0 +1,236 @@
+html {
+  height: 100%;
+}
+body {
+  background: linear-gradient(45deg, #59d3fc, #554dde);
+  height: 100vh;
+  margin: 0;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: "Nunito", sans-serif;
+}
+
+.custom-container {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+}
+
+.card:not(.table-card) {
+  background: rgba(255, 255, 255, 0.3);
+  padding: 3em;
+  border-radius: 20px;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 20px 20px 40px -6px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  position: relative;
+}
+
+.table-card {
+  background: rgba(255, 255, 255, 0.3);
+  padding: 3em;
+  border-radius: 20px;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 20px 20px 40px -6px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  position: relative;
+}
+
+.card.card-home {
+  transition: all 0.3s ease-in-out;
+}
+.card.card-home:hover {
+  margin: 15px;
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+}
+
+.card p {
+  font-weight: 500;
+  color: #fff;
+  opacity: 0.7;
+  font-size: 1.4rem;
+  margin-top: 0;
+  margin-bottom: 60px;
+}
+
+.receipt-card {
+  padding: 4em 0em 0em 2em;
+}
+
+.welcome-text {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.card a {
+  text-decoration: none;
+  color: #ddd;
+}
+.card a:hover {
+  text-shadow: 2px 2px 6px #00000040;
+}
+.card a:active {
+  text-shadow: none;
+}
+.card .btn {
+  background: transparent;
+  border: none;
+  border-radius: 5000px;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  color: #fff;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+.card .btn:hover:not(.white-bg-button) {
+  background: rgba(255, 255, 255, 0.1);
+}
+.card .btn:focus:not(.white-bg-button) {
+  background: rgba(255, 255, 255, 0.1);
+}
+.card .btn:active:not(.white-bg-button) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn {
+  border: none;
+  border-radius: 5000px;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  box-shadow: 4px 4px 60px 8px rgba(0, 0, 0, 0.2);
+  font-weight: 500;
+  opacity: 0.8;
+  transition: all 0.2s ease-in-out;
+}
+.btn:hover {
+  box-shadow: 4px 4px 60px 8px rgba(0, 0, 0, 0.3);
+}
+.btn:focus {
+  box-shadow: 4px 4px 60px 8px rgba(0, 0, 0, 0.3);
+}
+
+.island-button {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.island-button:hover {
+  color: #000 !important;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.summary-toggle:hover {
+  opacity: 100%;
+}
+
+.white-bg-button {
+  color: #fff !important;
+  background-color: #0d6efd !important;
+  box-shadow: 4px 4px 60px 8px rgba(0, 0, 0, 0.2);
+}
+
+.white-bg-button:hover {
+  background-color: #0a58ca !important;
+}
+
+.alt-white-bg-button {
+  color: #fff !important;
+  background-color: #6c757d !important;
+  box-shadow: 4px 4px 60px 8px rgba(0, 0, 0, 0.2);
+}
+
+.alt-white-bg-button:hover {
+  color: #fff !important;
+  background-color: #343a40 !important;
+  box-shadow: 4px 4px 60px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn:focus {
+  box-shadow: 4px 4px 60px 8px rgba(0, 0, 0, 0.3);
+}
+
+input.glow,
+select.glow,
+textarea.glow {
+  --box-shadow-color: white;
+  box-shadow: 4px 4px 30px var(--box-shadow-color);
+  opacity: 0.8;
+}
+
+.drop {
+  background: rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 10px 10px 60px -8px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  transition: all 0.2s ease;
+}
+
+.drop-1 {
+  height: 80px;
+  width: 80px;
+  top: -20px;
+  left: -40px;
+  z-index: -1;
+}
+.drop-2 {
+  height: 80px;
+  width: 80px;
+  bottom: -30px;
+  right: -10px;
+}
+.drop-3 {
+  height: 100px;
+  width: 100px;
+  bottom: 120px;
+  right: -50px;
+  z-index: -1;
+}
+.drop-4 {
+  height: 120px;
+  width: 120px;
+  top: -60px;
+  right: -60px;
+}
+.drop-5 {
+  height: 60px;
+  width: 60px;
+  bottom: 190px;
+  left: -20px;
+  z-index: -1;
+}
+
+::-moz-placeholder {
+  font-family: Nunito, sans-serif;
+  font-weight: 400;
+  color: #fff;
+}
+
+:-ms-input-placeholder {
+  font-family: Nunito, sans-serif;
+  font-weight: 400;
+  color: #fff;
+}
+
+::placeholder {
+  font-family: Nunito, sans-serif;
+  font-weight: 400;
+  color: #fff;
+}
+
+a,
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+  outline: none;
+}

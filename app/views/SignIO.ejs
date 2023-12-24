@@ -1,0 +1,146 @@
+<%- include("./partials/header") %>
+<style>
+  ::placeholder {
+    text-transform: none;
+  }
+
+  #nric,
+  #fullName{
+    text-transform: uppercase;
+  }
+
+  #sig-canvas {
+    width: 100%;
+  }
+
+  #progress-bar {
+    width: 0%;
+  }
+
+  #scan-input {
+    opacity: 0;
+  }
+</style>
+<main class="container w-50 mt-3">
+  <div class="card m-2 text-center">
+    <div class="card-body">
+  <form class="row g-3 text-light" method="post" action="/signIO/<%= signIO %>/<%= type %>" autocomplete="off">
+    <div class="form-group col-lg-2">
+      <button class="btn btn-warning w-100 text-nowrap" id="scan" type="button" data-bs-toggle="modal" data-bs-target="#scan-modal"><strong>Scan</strong></button>
+    </div>
+    <div class="form-group col-lg-5">
+      <input class="form-control glow" id="nric" name="data[nric]" type="password" placeholder="Unmasked NRIC (e.g. 'T0023398J')" maxlength="9" minlength="9" onkeyup="upper(this)" required>
+      <div class="valid-feedback">Looks good!</div>
+      <div class="invalid-feedback">Please enter <strong>unmasked</strong> NRIC (e.g. 'T0014489J').</div>
+    </div>
+    <div class="form-group col-lg-5">
+      <input class="form-control glow" id="fullName" name="data[fullName]" type="text" placeholder="Name" onkeyup="upper(this)" required>
+      <div class="valid-feedback">Looks good!</div>
+      <div class="invalid-feedback">Please enter your name.</div>
+    </div>
+    <% if (signIO=="signout") { %>
+    <div class="form-group col-md-12">
+      <select class="form-select glow" aria-label="Default select example" name="data[reason]" required>
+        <option value="PRESENT" selected>End of Day</option>
+        <option value="MA">Medical Appointment</option>
+        <option value="LEAVE">On Leave</option>
+      </select>
+    </div>
+    <div class="form-group col-md-12 mt-4">
+      <div class="input-group">
+        <span class="input-group-text">Remarks</span>
+        <textarea class="form-control glow" aria-label="With textarea" name="data[remarks]"></textarea>
+      </div>
+    </div>
+    <% } %>
+    <div class="form-group col-md-12">
+      <label class="form-label" for="signature">Signature</label>
+      <canvas class="border" id="sig-canvas"></canvas>
+      <button class="btn btn-sm w-100" id="signature-clear" type="button">Clear Signature</button>
+      <input id="signature" name="data[signature]" type="hidden">
+      <div class="invalid-feedback">Please sign.</div>
+    </div>
+    <div class="col-md-6">
+      <a class="btn btn-lg w-100" href="/">Go Back</a>
+    </div>
+    <div class="col-md-6">
+      <button class="btn btn-lg w-100" id="submit" type="submit"><strong><%- signIO=="signin" ? "Sign In" : "Sign Out" %></strong></button>
+    </div>
+  </form>
+  </div></div>
+</main>
+<div class="modal fade" id="scan-modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">ID Card Scanner</h5>
+        <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label" for="scan-input"><strong>Scan ID Card:</strong></label>
+        <input class="form-control form-control-sm" id="scan-input" type="text" value="" autocomplete="off" autofocus>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/javascripts/canvas.js"></script>
+<script>
+  // Variable declarations
+  const formInputs = Object.fromEntries(
+      Array.from(document.querySelectorAll("main input, main select")).map((element) => [element.id, element])
+    ),
+    signature_canvas = document.getElementById("sig-canvas"),
+    signature_clear = document.getElementById("signature-clear"),
+    submit = document.getElementById("submit");
+
+  const scan_modal = document.getElementById("scan-modal"),
+    scan_input = document.getElementById("scan-input");
+
+  const bsModal = new bootstrap.Modal(scan_modal, {});
+
+  // Function definitions
+  const upper = (element) => element.value = element.value.toUpperCase();
+
+  // Canvas scripting
+  const clearCanvas = () => {
+    signature_canvas.width = signature_canvas.width;
+    formInputs.signature.value = "";
+  }
+
+  // https://stackoverflow.com/questions/17386707/how-to-check-if-a-canvas-is-blank
+  function isCanvasBlank(canvas) {
+    const context = canvas.getContext('2d');
+
+    const pixelBuffer = new Uint32Array(
+      context.getImageData(0, 0, canvas.width, canvas.height).data.buffer
+    );
+
+    return !pixelBuffer.some(color => color !== 0);
+  }
+
+  signature_canvas.width = signature_canvas.clientWidth;
+  signature_canvas.height = signature_canvas.clientWidth / 4 * 2;
+
+  signature_clear.addEventListener("click", () => {
+    clearCanvas();
+  });
+
+  signature_canvas.addEventListener("mouseup", () => {
+    formInputs.signature.value = signature_canvas.toDataURL();
+  });
+
+  document.onreadystatechange = () => bsModal.show();
+  scan_modal.addEventListener("shown.bs.modal", () => scan_input.focus());
+
+  scan_input.addEventListener("keyup", () => {
+    setTimeout(() => {
+      bsModal.hide();
+      const scanArr = scan_input.value.split(scan_input.value.split("").includes("~") ? "~" : "|");
+      if (scanArr.length >= 2) {
+        formInputs.nric.value = scanArr[0];
+        formInputs.rankName.value = scanArr[1];
+      }
+    }, 500);
+  });
+</script>

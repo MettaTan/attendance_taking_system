@@ -1,0 +1,418 @@
+<%- include("./partials/header") %>
+
+<script>
+  const checkPassword = (el) => {
+    const pw = el.value
+    if (pw === "123") {
+      document.getElementById('dateBox').removeAttribute('hidden')
+    } else {
+      document.getElementById('dateBox').setAttribute('hidden', "")
+    }
+  }
+</script>
+
+<main class="container pb-4">
+  <div class="hstack gap-3 m-3">
+    <a href="/">
+      <button class="btn island-button">Back</button>
+    </a>
+        <!-- ! Print Parade State trigger modal -->
+        <button type="button" class="btn island-button" data-bs-toggle="modal" data-bs-target="#printOverallStatusModal">
+          Print Overall Attendance
+        </button>
+        <!-- ! Print Parade State Modal -->
+        <div class="modal fade" id="printOverallStatusModal" tabindex="-1" aria-labelledby="printOverallStatusModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-body vstack">
+                <div class="btn-group" role="group" aria-label="Basic outlined example">
+                  <a href="/overallStatus/<%= type %>/AM" class="btn btn-outline-primary menuButton">
+                    <p><strong>AM</strong></p>
+                  </a>
+                  <a href="/overallStatus/<%= type %>/PM" class="btn btn-outline-primary menuButton">
+                    <p><strong>PM</strong></p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>     
+    <!-- ! Past Status modal -->
+    <button type="button" class="btn island-button" data-bs-toggle="modal" data-bs-target="#pastOverallStatusPwModal">
+      Past Status
+    </button>
+    <!-- ! Past Status Modal -->
+    <div class="modal fade" id="pastOverallStatusPwModal" tabindex="-1" aria-labelledby="pastOverallStatusPwModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="pastOverallStatusPasswordInput" class="form-label">Past Status Password</label>
+              <input type="password" class="form-control" id="pastOverallStatusPasswordInput" placeholder="123" onkeyup="checkPassword(this)">
+            </div>
+            <div class="mb-3" id="dateBox" hidden>
+              <form>
+                <input type="date" class="form-control" id="dateInput" name="date">
+                <button class="btn btn-primary mt-3 w-100" type="submit">Submit</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a href="/overallStatus/export">
+      <button type="button" class="btn island-button">
+        Export Overall Status
+      </button>
+    </a>
+  </div>
+
+  <div class="card text-center" style="width: 100%;">
+  <div class="card-body">
+
+  <h3 class="text-light"><strong>Overall Attendance</strong></h3>
+  <h4 class="text-light mb-4">Date: <strong><%= date %></strong></h4>
+
+  <ul class="nav nav-tabs" id="myTab" role="tablist" >
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active fw-bold" id="am-tab" data-bs-toggle="tab" data-bs-target="#am-tab-pane" type="button" role="tab" aria-controls="am-tab-pane" aria-selected="true">AM</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link fw-bold" id="pm-tab" data-bs-toggle="tab" data-bs-target="#pm-tab-pane" type="button" role="tab" aria-controls="pm-tab-pane" aria-selected="false">PM</button>
+    </li>
+  </ul>
+  <div class="card bg-light" style="border: none; box-shadow: 4px 4px 60px rgba(0, 0, 0, 0.2); border-radius: 0px 0px 20px 20px;">
+  <div class="tab-content" id="myTabContent" >
+    <!-- ! AM Tab -->
+    <section class="tab-pane fade show active" id="am-tab-pane" role="tabpanel" aria-labelledby="am-tab" tabindex="0" >
+      <!-- ? AM Summary -->
+      <aside class="container my-3">
+        <p>
+          <a class="btn bg-primary summary-toggle px-5" data-bs-toggle="collapse" href="#collapseAMSummary" role="button" aria-expanded="false" aria-controls="collapseAMSummary">
+            ATTENDANCE SUMMARY
+          </a>
+        </p>
+        <div class="collapse text-dark" id="collapseAMSummary">
+          <div class="card card-body bg-primary" style="--bs-bg-opacity: 70%; box-shadow: none;">
+            <ul class="row"></ul>
+            <% allAMStatus.forEach(amStatusObj => { %>
+            <div class="d-flex w-100 justify-content-between">
+              <div>
+                <p class="mb-0"><strong><%= amStatusObj.statusTitle %>:</strong></p>
+              </div>
+              <div class="d-flex">
+                <p class="mb-0" id="<%= amStatusObj.statusTitle %>AM"></p>
+                <p class="mb-0">/<%= totalHeadcount %></p>
+              </div>
+            </div>
+            <ul class="row">
+              <% amStatusObj.allStatuses.forEach(status => { %>
+              <li class="<%= amStatusObj.statusTitle %>AM col-4 text-light col-4" style="opacity: 70%;">
+                <%= status.personnel.rank %> <%= status.personnel.name %>
+              </li>
+              <% }) %>
+            </ul>
+            <% }) %>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ? AM Statuses -->
+
+      <aside class="accordion" style="border-radius: 20px;box-shadow: 4px 4px 60px rgba(0, 0, 0, 0.2);" id="amAccordion">
+        <% allAMStatus.forEach((amStatusObj) => { %>
+        <div class="accordion-item" >
+          <h2 class="accordion-header" id="heading<%= amStatusObj.statusTitle %>AM">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= amStatusObj.statusTitle %>AM" aria-expanded="true" aria-controls="collapse<%= amStatusObj.statusTitle %>AM">
+              <%= amStatusObj.statusTitle %>
+            </button>
+          </h2>
+          <div id="collapse<%= amStatusObj.statusTitle %>AM" class="accordion-collapse collapse" aria-labelledby="heading<%= amStatusObj.statusTitle %>AM" data-bs-parent="#amAccordion">
+            <div class="accordion-body">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Faculty</th>
+                    <th scope="col">Full Name</th>
+                    <th scope="col">HP</th>
+                    <th scope="col">AM</th>
+                    <th scope="col">PM</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% amStatusObj.allStatuses.forEach((amStatus,amStatusIndex) => { %>
+                  <form action="/overallStatus/<%= type %>?_method=PATCH" method="POST">
+                    <tr>
+                      <td hidden>
+                        <input hidden type="text" class="form-control" id="<%= amStatus._id %>AMStatus" name="_id" value="<%= amStatus._id %>">
+                      </td>
+                      <td class="id"><%= amStatusIndex + 1 %> </td>
+                      <td class="department"><%= amStatus.faculty %> </td>
+                      <td class="col-2"><%= amStatus.personnel.name %></td>
+                      <td><%= amStatus.personnel.hp %></td>
+
+                      <!-- ? AM Status -->
+                      <td>
+                        <table>
+                          <tr>
+                            <td>
+                              <div class="vstack gap-2">
+                                <select class="form-select" aria-label="<%= amStatus._id %>AM" name="AM">
+                                  <option selected="<%= amStatus.status.AM %>" hidden><%= amStatus.status.AM %></option>
+                                  <option value="MA">MEDICAL APPT</option>
+                                  <option value="LEAVE">LEAVE</option>
+                                  <option value="UNKNOWN">UNKNOWN</option>
+                                  <option value="MC">MEDICAL LEAVE</option>
+                                </select>
+                              </div>
+                            </td>
+                            <td align="center">
+                              <% if (amStatus.signin.signin) { %>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="green" stroke="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
+                              </svg>
+                              <% } else if (!amStatus.signin.signin) { %>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="red" stroke="red" class="bi bi-x-octagon" viewBox="0 0 16 16">
+                                <path d="M4.54.146A.5.5 0 0 1 4.893 0h6.214a.5.5 0 0 1 .353.146l4.394 4.394a.5.5 0 0 1 .146.353v6.214a.5.5 0 0 1-.146.353l-4.394 4.394a.5.5 0 0 1-.353.146H4.893a.5.5 0 0 1-.353-.146L.146 11.46A.5.5 0 0 1 0 11.107V4.893a.5.5 0 0 1 .146-.353L4.54.146zM5.1 1 1 5.1v5.8L5.1 15h5.8l4.1-4.1V5.1L10.9 1H5.1z" />
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                              </svg>
+                              <% } %>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">
+                              <textarea class="form-control" id="<%= amStatus._id %>AMSummaryRemarksAM" name="amRemarks" rows="2" placeholder="AM Remarks"><%= amStatus.status.amRemarks %></textarea>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+
+                      <!-- ? PM Status -->
+                      <td>
+                        <table>
+                          <tr>
+                            <td>
+                              <div class="vstack gap-2">
+                                <select class="form-select" aria-label="<%= amStatus._id %>AM" name="PM">
+                                  <option selected="<%= amStatus.status.PM %>" hidden><%= amStatus.status.PM %></option>
+                                  <option value="MA">MEDICAL APPT</option>
+                                  <option value="LEAVE">LEAVE</option>
+                                  <option value="UNKNOWN">UNKNOWN</option>
+                                  <option value="MC">MEDICAL LEAVE</option>
+                                </select>
+                              </div>
+                            </td>
+                            <td align="center">
+                              <% if (amStatus.signout.signout) { %>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="green" stroke="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
+                              </svg>
+                              <% } else if (!amStatus.signout.signout) { %>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="red" stroke="red" class="bi bi-x-octagon" viewBox="0 0 16 16">
+                                <path d="M4.54.146A.5.5 0 0 1 4.893 0h6.214a.5.5 0 0 1 .353.146l4.394 4.394a.5.5 0 0 1 .146.353v6.214a.5.5 0 0 1-.146.353l-4.394 4.394a.5.5 0 0 1-.353.146H4.893a.5.5 0 0 1-.353-.146L.146 11.46A.5.5 0 0 1 0 11.107V4.893a.5.5 0 0 1 .146-.353L4.54.146zM5.1 1 1 5.1v5.8L5.1 15h5.8l4.1-4.1V5.1L10.9 1H5.1z" />
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                              </svg>
+                              <% } %>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">
+                              <textarea class="form-control" id="<%= amStatus._id %>AMSummaryRemarksPM" name="pmRemarks" rows="2" placeholder="PM Remarks"><%= amStatus.status.pmRemarks %></textarea>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                      <td>
+                        <button class="btn white-bg-button" type="submit">Update</button>
+                      </td>
+                    </tr>
+                  </form>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <% }) %>
+      </aside>
+    </section>
+
+    <!-- ! PM Tab -->
+    <section class="tab-pane fade" id="pm-tab-pane" role="tabpanel" aria-labelledby="pm-tab" tabindex="0">
+      <!-- ? PM Summary -->
+      <aside class="container my-3">
+        <p>
+          <a class="btn bg-primary summary-toggle px-5" data-bs-toggle="collapse" href="#collapsePMSummary" role="button" aria-expanded="false" aria-controls="collapsePMSummary">
+            ATTENDANCE SUMMARY
+          </a>
+        </p>
+        <div class="collapse text-dark" id="collapsePMSummary">
+          <div class="card card-body bg-primary" style="--bs-bg-opacity: 70%; box-shadow: none">
+            <ul class="row"></ul>
+            <% allPMStatus.forEach(pmStatusObj => { %>
+            <div class="d-flex w-100 justify-content-between">
+              <div>
+                <p class="mb-0"><strong><%= pmStatusObj.statusTitle %>:</strong></p>
+              </div>
+              <div class="d-flex">
+                <p class="mb-0" id="<%= pmStatusObj.statusTitle %>PM"></p>
+                <p class="mb-0">/<%= totalHeadcount %></p>
+              </div>
+            </div>
+            <ul class="row">
+              <% pmStatusObj.allStatuses.forEach(status => { %>
+              <li class="<%= pmStatusObj.statusTitle %>PM text-light col-4" style="opacity: 70%;">
+                <%= status.personnel.rank %> <%= status.personnel.name %>
+              </li>
+              <% }) %>
+            </ul>
+            <% }) %>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ? PM Statuses -->
+      <aside class="accordion" style="border-radius: 20px;box-shadow: 4px 4px 60px rgba(0, 0, 0, 0.2);" id="pmAccordion">
+        <% allPMStatus.forEach((pmStatusObj) => { %>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="heading<%= pmStatusObj.statusTitle %>PM">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= pmStatusObj.statusTitle %>PM" aria-expanded="true" aria-controls="collapse<%= pmStatusObj.statusTitle %>PM">
+              <%= pmStatusObj.statusTitle %>
+            </button>
+          </h2>
+          <div id="collapse<%= pmStatusObj.statusTitle %>PM" class="accordion-collapse collapse" aria-labelledby="heading<%= pmStatusObj.statusTitle %>PM" data-bs-parent="#pmAccordion">
+            <div class="accordion-body">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Faculty</th>
+                    <th scope="col">Full Name</th>
+                    <th scope="col">HP</th>
+                    <th scope="col">AM</th>
+                    <th scope="col">PM</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% pmStatusObj.allStatuses.forEach((pmStatus,pmStatusIndex) => { %>
+                  <form action="/overallStatus/<%= type %>?_method=PATCH" method="POST">
+                    <tr>
+                      <td hidden>
+                        <input hidden type="text" class="form-control" id="<%= pmStatus._id %>PMStatus" name="_id" value="<%= pmStatus._id %>">
+                      </td>
+                      <td class="id"><%= pmStatusIndex + 1 %> </td>
+                      <td class="department"><%= pmStatus.department %> </td>
+                      <td class="col-2"><%= pmStatus.personnel.name %></td>
+                      <td><%= pmStatus.personnel.hp %></td>
+
+                      <!-- ? AM Status -->
+                      <td>
+                        <table>
+                          <tr>
+                            <td>
+                              <div class="vstack gap-2">
+                                <select class="form-select" aria-label="<%= pmStatus._id %>AM" name="AM">
+                                  <option selected="<%= pmStatus.status.AM %>" hidden><%= pmStatus.status.AM %></option>
+                                  <option value="MA">MEDICAL APPT</option>
+                                  <option value="LEAVE">LEAVE</option>
+                                  <option value="UNKNOWN">UNKNOWN</option>
+                                  <option value="MC">MEDICAL LEAVE</option>
+                                </select>
+                              </div>
+                            </td>
+                            <td align="center">
+                              <% if (pmStatus.signin.signin) { %>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="green" stroke="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
+                              </svg>
+                              <% } else if (!pmStatus.signin.signin) { %>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="red" stroke="red" class="bi bi-x-octagon" viewBox="0 0 16 16">
+                                <path d="M4.54.146A.5.5 0 0 1 4.893 0h6.214a.5.5 0 0 1 .353.146l4.394 4.394a.5.5 0 0 1 .146.353v6.214a.5.5 0 0 1-.146.353l-4.394 4.394a.5.5 0 0 1-.353.146H4.893a.5.5 0 0 1-.353-.146L.146 11.46A.5.5 0 0 1 0 11.107V4.893a.5.5 0 0 1 .146-.353L4.54.146zM5.1 1 1 5.1v5.8L5.1 15h5.8l4.1-4.1V5.1L10.9 1H5.1z" />
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                              </svg>
+                              <% } %>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">
+                              <textarea class="form-control" id="<%= pmStatus._id %>PMSummaryRemarksAM" name="amRemarks" rows="2" placeholder="AM Remarks"><%= pmStatus.status.amRemarks %></textarea>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+
+                      <!-- ? PM Status -->
+                      <td>
+                        <table>
+                          <tr>
+                            <td>
+                              <div class="vstack gap-2">
+                                <select class="form-select" aria-label="<%= pmStatus._id %>PM" name="PM">
+                                  <option selected="<%= pmStatus.status.PM %>" hidden><%= pmStatus.status.PM %></option>
+                                  <option value="MA">MEDICAL APPT</option>
+                                  <option value="LEAVE">LEAVE</option>
+                                  <option value="UNKNOWN">UNKNOWN</option>
+                                  <option value="MC">MEDICAL LEAVE</option>
+                                </select>
+                              </div>
+                            </td>
+                            <td align="center">
+                              <% if (pmStatus.signout.signout) { %>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="green" stroke="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
+                              </svg>
+                              <% } else if (!pmStatus.signout.signout) { %>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="red" stroke="red" class="bi bi-x-octagon" viewBox="0 0 16 16">
+                                <path d="M4.54.146A.5.5 0 0 1 4.893 0h6.214a.5.5 0 0 1 .353.146l4.394 4.394a.5.5 0 0 1 .146.353v6.214a.5.5 0 0 1-.146.353l-4.394 4.394a.5.5 0 0 1-.353.146H4.893a.5.5 0 0 1-.353-.146L.146 11.46A.5.5 0 0 1 0 11.107V4.893a.5.5 0 0 1 .146-.353L4.54.146zM5.1 1 1 5.1v5.8L5.1 15h5.8l4.1-4.1V5.1L10.9 1H5.1z" />
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                              </svg>
+                              <% } %>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">
+                              <textarea class="form-control" id="<%= pmStatus._id %>PMSummaryRemarksPM" name="pmRemarks" rows="2" placeholder="PM Remarks"><%= pmStatus.status.pmRemarks %></textarea>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                      <td>
+                        <button class="btn btn-primary white-bg-button" type="submit">Update</button>
+                      </td>
+                    </tr>
+                  </form>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+      </aside>
+    </section>
+  </div>
+  </div>
+  </div>
+</main>
+
+<script>
+  const statuses = ['PRESENT', 'MA', 'LEAVE', 'UNKNOWN', 'MC']
+
+  const renderSummary = (ampm) => {
+    statuses.forEach(status => {
+      let sum = 0;
+      document.querySelectorAll(`.${status}${ampm}`).forEach((el) => {
+        sum++
+        // if (status == "PRESENT") {
+        //   el.setAttribute("hidden", "")
+        // }
+      })
+      document.getElementById(`${status}${ampm}`).innerText = sum
+    });
+  }
+  renderSummary("AM")
+  renderSummary("PM")
+</script>

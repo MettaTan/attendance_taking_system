@@ -1,0 +1,95 @@
+<%- include("../partials/header") %>
+<style>
+  ::placeholder {
+    text-transform: none;
+  }
+
+  th {
+    white-space: nowrap;
+  }
+
+  .tableButton {
+    vertical-align: middle;
+  }
+
+  #cardNric,
+  #cardFullName {
+    text-transform: uppercase;
+  }
+</style>
+<main class="custom-container w-50 mt-1">
+  
+  <div class="card m-2 text-center" style="width: 100%;">
+    <div class="card-body">
+      <div class="row d-flex justify-content-center mb-4">
+
+      <a href="/staff/schoolPersonnels">
+        <button class="btn btn-light glow-button menuButton col-sm-12" type="button">School Personnels</button>
+      </a>
+      </div>
+      <div class="row d-flex justify-content-center mb-4">
+    <a href="/staff/forecast">
+      <button class="btn btn-light glow-button menuButton col-sm-12" type="button">Forecast Personnels</button>
+    </a>
+  </div>
+  
+  <div class="row d-flex justify-content-center mb-4">
+      <a href="/staff/overallStatus">
+        <button class="btn btn-light glow-button menuButton col-sm-12" type="button">Overall Status</button>
+      </a>
+    </div>
+    
+  <div class="row d-flex justify-content-center">
+    <a href="/">
+      <button class="btn btn-dark btn-outline-light menuButton col-sm-12" type="button">Back</button>
+    </a>
+  </div>
+</div>
+</div>
+</div>
+</main>
+
+
+<!-- Forecast Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Forecast Overall Status</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form name="dateForm" id="dateForm">
+        <div class="modal-body">
+          <label for="birthday">Date to forecast: </label>
+          <input type="date" name="date" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="submitDate()">Forecast</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const submitDate = async () => {
+    let date = document.dateForm.date.value
+    const year = date.substring(0, 4)
+    const month = date.substring(5, 7)
+    const day = date.substring(8, 10)
+    let forecastDate = `${day}/${month}/${year}`
+
+    await fetch('http://localhost:3000/admin/forecast', {
+      method: 'POST', // or 'PUT'
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        forecastDate
+      })
+    }).then(() => {
+      window.location.href = `http://localhost:3000/admin/forecast/${forecastDate}`
+    })
+  }
+</script>

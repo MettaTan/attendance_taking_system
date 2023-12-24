@@ -1,0 +1,123 @@
+<main class="mx-3 mt-5 table-responsive ">
+  
+  <div class="container w-100 mb-4">
+    <a href="/">
+      <button class="btn island-button mb-3" style="box-shadow: none;">Back to Home</button>
+    </a>
+  <div class="card">
+  <button class="btn col-lg-12 mb-3" onclick="exportData()">Export</button>
+  <div class="text-light">
+    METTACADEMY OVERALL ATTENDANCE FOR <b id="date"><%= date %></b>
+  </div>
+
+  <table class="table bg-light table-striped-columns table-bordered align-middle mt-2 mb-0" id="overallStatus">
+    <thead>
+      <tr class="align-middle">
+        <th>S/N</th>
+        <th>NRIC</th>
+        <th>NAME</th>
+        <th>FACULTY</th>
+        <th>STAFF/STUDENT</th>
+        <th>STATUS (AM)</th>
+        <th>AM REMARKS</th>
+        <th>STATUS (PM)</th>
+        <th>PM REMARKS</th>
+        <th>START</th>
+        <th>END</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% overallStatus.forEach((status,index) => { %>
+      <tr>
+        <th scope="row"><%= index + 1 %></th>
+        <td><%= status.personnel.nric %></td>
+        <td><%= status.personnel.name %></td>
+        <td><%= status.personnel.faculty %></td>
+        <td><%= status.personnel.type.toUpperCase() %></td>
+        <% if (status.status.AM == "MC"){ %>
+          <td>MEDICAL LEAVE</td>
+          <% } else if (status.status.AM == "MA"){ %>
+          <td>MEDICAL APPT</td>
+          <% } else { %>
+          <td><%= status.status.AM %></td>
+          <% } %>
+        <td><%= status.status.amRemarks %></td>
+        <% if (status.status.PM == "MC"){ %>
+        <td>MEDICAL LEAVE</td>
+        <% } else if (status.status.PM == "MA"){ %>
+        <td>MEDICAL APPT</td>
+        <% } else { %>
+        <td><%= status.status.PM %></td>
+        <% } %>
+        <td><%= status.status.pmRemarks %></td>
+        <td><%= date %></td>
+        <td><%= date %></td>
+      </tr>
+      <% }) %>
+
+    </tbody>
+  </table>
+</div>
+</div>
+</main>
+
+<script>
+  function exportData() {
+    /* Get the HTML data using Element by Id */
+    let table = document.getElementById("overallStatus");
+    let date = document.getElementById("date");
+
+    /* Declaring array variable */
+    let rows = [];
+
+    //iterate through rows of table
+    for (let i = 0, row; row = table.rows[i]; i++) {
+      //rows would be accessed using the "row" variable assigned in the for loop
+      //Get each cell value/column from the row
+      column0 = row.cells[0].innerText;
+      column1 = row.cells[1].innerText;
+      column2 = row.cells[2].innerText;
+      column3 = row.cells[3].innerText;
+      column4 = row.cells[4].innerText;
+      column5 = row.cells[5].innerText;
+      column6 = row.cells[6].innerText;
+      column7 = row.cells[7].innerText;
+      column8 = row.cells[8].innerText;
+      column9 = row.cells[9].innerText;
+      column10 = row.cells[10].innerText;
+
+      /* add a new records in the array */
+      rows.push(
+        [
+          column0,
+          column1,
+          column2,
+          column3,
+          column4,
+          column5,
+          column6,
+          column7,
+          column8,
+          column9,
+          column10,
+        ]
+      );
+    }
+    csvContent = "data:text/csv;charset=utf-8,";
+    let data = "";
+    /* add the column delimiter as comma(,) and each row splitted by new line character (\n) */
+    rows.forEach(function(rowArray) {
+      row = rowArray.join(",");
+      data += row + "\n";
+    });
+
+    /* create a hidden <a> DOM node and set its download attribute */
+    let encodedUri = csvContent + encodeURI(data);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Overall_Status_${date.innerText}.csv`);
+    document.body.appendChild(link);
+
+    link.click();
+  }
+</script>

@@ -1,0 +1,201 @@
+<div class="custom-container">
+  <div class="card card-home">
+    <p class="welcome-text mt-3">Welcome to <strong>Mettacademy</strong></p>
+    <div class="row d-flex justify-content-center mb-4">
+    <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#signinModal"><strong>Sign-in</strong></button>
+    </div>
+    <div class="row d-flex justify-content-center mb-4">
+    <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#signoutModal"><strong>Sign-out</strong></button>
+    </div>
+    <div class="row d-flex justify-content-center mb-4">
+      <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addPersonnel">
+        Register Personnel
+      </button>
+    </div>
+    <div class="row d-flex justify-content-center mb-4">
+      <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#overallStatusModal">View Overall Attendance</button>
+    </div>
+    <div class="row d-flex justify-content-center mb-4">
+    <div class="btn-group p-0" role="group" aria-label="Basic example">
+    <button class="btn col-3" type="button" data-bs-toggle="modal" data-bs-target="#admin-modal">Admin </br>Menu</button>
+    <button class="btn col-3" type="button" data-bs-toggle="modal" data-bs-target="#staff-modal">Staff </br>Menu</button>
+    </div>
+    </div>
+    <a class="row d-flex justify-content-center mb-4" href="http://127.0.0.1:8080/landing/landing.html" style="text-decoration: none;">
+      <button class="btn btn-outline-light btn-lg" type="button">Return to<br>Main Menu</button>
+    </a>
+  </div>
+
+  <div class="drops">
+    <div class="drop drop-1"></div>
+    <div class="drop drop-2"></div>
+    <div class="drop drop-3"></div>
+    <div class="drop drop-4"></div>
+    <div class="drop drop-5"></div>
+  </div>
+
+</div>
+
+    <!-- Add Personnel Modal -->
+    <form action="/admin/schoolPersonnels" method="POST">
+      <div class="modal fade" id="addPersonnel" tabindex="-1" aria-labelledby="addPersonnelLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="addPersonnelLabel">Register New Personnel</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <!-- Type of Personnel -->
+              <div class="input-group mb-3">
+                <div class="btn-group btn-primary w-100" role="group" aria-label="Basic radio toggle button group">
+                  <input type="radio" class="btn-check" id="inputStudent" autocomplete="off" checked name="person[type]" value="student">
+                  <label class="btn" for="inputStudent">Student</label>
+
+                  <input type="radio" class="btn-check" id="inputStaff" autocomplete="off" name="person[type]" value="staff">
+                  <label class="btn" for="inputStaff">Staff</label>
+                </div>
+              </div>
+
+              <!-- Faculty -->
+              <div class="input-group mb-3">
+                <span class="input-group-text" id="selectFaculty">Faculty</span>
+                <select class="form-select" aria-label="selectFaculty" name="person[faculty]">
+                  <option selected disabled hidden>Choose Faculty</option>
+                  <option value="SCIENCE">SCIENCE</option>
+                  <option value="HUMANITIES">HUMANITIES</option>
+                  <option value="ENGINEERING">ENGINEERING</option>
+                </select>
+              </div>
+
+              <!-- Name -->
+              <label for="inputName" class="form-label">Full Name</label>
+              <div class="input-group mb-3">
+                <input type="text" class="form-control uppercase" id="inputName" aria-describedby="basic-addon3" required name="person[name]" placeholder="Name" onkeyup="uppercase(this)">
+              </div>
+
+              <!-- NRIC -->
+              <label for="inputNric" class="form-label">NRIC</label>
+              <div class="input-group mb-4">
+                <input type="text" class="form-control uppercase" id="inputNric" aria-describedby="basic-addon3" required name="person[nric]" placeholder="e.g. T0123456J" onkeyup="uppercase(this)">
+              </div>
+
+              <!-- HP Number -->
+              <div class="input-group mb-3">
+                <span class="input-group-text">65</span>
+                <input type="number" class="form-control uppercase" min="60000000" max="99999999" required name="person[hp]">
+              </div>
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+<!-- Admin Modal -->
+<div class="modal fade" id="admin-modal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <form class="modal-content" method="post" action="/admin" autocomplete="off">
+      <div class="modal-header">
+        <h5 class="modal-title">Admin Panel</h5>
+        <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label" for="admin-panel">Admin Password:</label>
+        <input class="form-control" id="admin-panel" name="adminPW" type="password" placeholder="123">
+      </div>
+      <div class="modal-footer">
+        <button class="btn alt-white-bg-button me-auto" type="button" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-primary" type="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Regulars Modal -->
+<div class="modal fade" id="staff-modal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <form class="modal-content" method="post" action="/staff" autocomplete="off">
+      <div class="modal-header">
+        <h5 class="modal-title">Staff Panel</h5>
+        <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label" for="staff-panel">Staff Password:</label>
+        <input class="form-control" id="staff-panel" name="staffPW" type="password" placeholder="123">
+      </div>
+      <div class="modal-footer">
+        <button class="btn alt-white-bg-button me-auto" type="button" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-primary" type="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Bookin Modal -->
+<div class="modal fade" id="signinModal" tabindex="-1" aria-labelledby="signinModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body vstack">
+        <div class="btn-group" role="group" aria-label="Basic outlined example">
+          <a href="signIO/signin/student" class="btn btn-outline-primary menuButton">
+            <p><strong>STUDENT</strong></p>
+          </a>
+          <a href="signIO/signin/staff" class="btn btn-outline-primary menuButton">
+            <p><strong>STAFF</strong></p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bookout Modal -->
+<div class="modal fade" id="signoutModal" tabindex="-1" aria-labelledby="signoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body vstack">
+        <div class="btn-group" role="group" aria-label="Basic outlined example">
+          <a href="signIO/signout/student" class="btn btn-outline-primary menuButton">
+            <p><strong>STUDENT</strong></p>
+          </a>
+          <a href="signIO/signout/staff" class="btn btn-outline-primary menuButton">
+            <p><strong>STAFF</strong></p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="overallStatusModal" tabindex="-1" aria-labelledby="overallStatusModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body vstack">
+        <div class="btn-group" role="group" aria-label="Basic outlined example">
+          <a href="/overallStatus/student" class="btn btn-outline-primary menuButton">
+            <p><strong>STUDENT</strong></p>
+          </a>
+          <a href="/overallStatus/staff" class="btn btn-outline-primary menuButton">
+            <p><strong>STAFF</strong></p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const admin_modal = document.getElementById("admin-modal"),
+  admin_panel = document.getElementById("admin-panel");
+
+  admin_modal.addEventListener("shown.bs.modal", () => admin_panel.focus());
+
+  const uppercase = (obj) => {
+    obj.value = obj.value.toUpperCase()
+  }
+</script>

@@ -1,0 +1,324 @@
+<%- include("../partials/header") %>
+<style>
+  ::placeholder {
+    text-transform: none;
+  }
+
+  th {
+    white-space: nowrap;
+  }
+
+  .tableButton {
+    vertical-align: middle;
+  }
+
+  #cardNric,
+  .uppercase {
+    text-transform: uppercase;
+  }
+
+</style>
+<main class="container my-3">
+  <div class="card table-card w-100">
+  <nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Student</button>
+      <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Staff</button>
+    </div>
+  </nav>
+  <div class="tab-content bg-light" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
+      <!-- Start NSF Tab -->
+      <div class="d-flex justify-content-evenly">
+        <table class="table table-striped text-light">
+          <thead class="text-dark">
+            <tr>
+              <th scope="col">Faculty</th>
+              <th scope="col">Name</th>
+              <th scope="col">HP Number</th>
+              <th scope="col">Statuses</th>
+              <th scope="col">Update</th>
+              <th scope="col">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% studentPersonnels.forEach(person => { %>
+            <form action="/admin/schoolPersonnels?_method=PATCH" method="POST">
+              <tr>
+                <td class="col-2">
+                  <select class="form-select" aria-label="<%= person._id %>Faculty" name="person[faculty]">
+                    <option selected><%= person.faculty %></option>
+                    <option value="SCIENCE">SCIENCE</option>
+                    <option value="HUMANITIES">HUMANITIES</option>
+                    <option value="ENGINEERING">ENGINEERING</option>
+                  </select>
+                </td>
+                <td class="col-6">
+                  <input type="text" class="form-control uppercase" id="<%= person.name %>" minlength="0" value="<%= person.name %>" name="person[name]" required>
+                </td>
+
+                <td class="col-2">
+                  <input type="number" class="form-control" id="<%= person.hp %>" min="60000000" max="99999999" value="<%= person.hp %>" name="person[hp]" required>
+                </td>
+                <input hidden type="text" class="form-control" id="<%= person._id %>" value="<%= person._id %>" name="person[_id]">
+                <input hidden type="text" class="form-control" id="<%= person._id %>" value="<%= person._id %>" name="person[type]">
+                <td><button type="button" class="btn white-bg-button" style="background-color: #fff;" data-bs-toggle="modal" data-bs-target="#status<%= person._id %>">Status</button></td>
+                <td><button type="submit" class="btn white-bg-button" style="background-color: #fff;">Update</button></td>
+                <td><button type="button" class="btn alt-white-bg-button" style="background-color: #fff;" data-bs-toggle="modal" data-bs-target="#delete<%= person._id %>">Delete</button></td>
+              </tr>
+            </form>
+
+            <!-- Delete Modal -->
+            <form action="/admin/schoolPersonnels?_method=DELETE" method="POST">
+              <div class="modal fade" id="delete<%= person._id %>" tabindex="-1" aria-labelledby="delete<%= person._id %>Label" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="delete<%= person._id %>Label">Are you sure? All data will be gone!</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label for="<%= person._id %>" class="form-label">Enter <strong><%= person.name %></strong> user id: <strong><%= person._id %></strong> to delete</label>
+                        <input type="text" class="form-control" id="<%= person._id %>" placeholder="<%= person._id %>" minlength="8" required>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn alt-white-bg-button" data-bs-dismiss="modal">Close</button>
+                      <input hidden type="text" class="form-control" id="<%= person._id %>" value="<%= person._id %>" name="person[_id]">
+                      <button type="submit" class="btn white-bg-button">Delete!</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            <!-- Status Modal -->
+            <div>
+              <div class="modal fade" id="status<%= person._id %>" tabindex="-1" aria-labelledby="status<%= person._id %>Label" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="status<%= person._id %>Label">Future Statuses</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <% person.statuses.forEach((status,index) => { %>
+                      <div>
+                        <form action="/admin/schoolPersonnels/updateFutureStatus" method="post">
+                          <div class="d-flex">
+                            <h5>Date: <%= status.date %></h5>
+                            <input type="text" value="<%= status._id %>" hidden name="_id">
+                            <button type="submit" class="mb-3 ms-auto btn white-bg-button">Update</button>
+                          </div>
+                          <!-- AM -->
+                          <div class="d-flex">
+                            <div class="form-group col-3 d-flex me-3">
+                              <p class="me-3">AM:</p>
+                              <select class="form-select" aria-label="Default select example" name="[am][reason]" id="reasonInputAM<%= index %>" required>
+                                <option hidden selected value="<%= status.status.AM %>"><%= status.status.AM %> </option>
+                                <option value="UNKNOWN">UNKNOWN</option>
+                                <option value="MA">MEDICAL APPT</option>
+                                <option value="LEAVE">LEAVE</option>
+                                <option value="MC">MEDICAL LEAVE</option>
+                              </select>
+                            </div>
+                            <div class="input-group">
+                              <span class="input-group-text">AM Remarks</span>
+                              <textarea class="form-control" aria-label="With textarea" id="remarksInputAM<%= index %>" rows="1" name="[am][remarks]"><%= status.status.amRemarks %></textarea>
+                            </div>
+                          </div>
+                          <!-- PM -->
+                          <div class="d-flex mt-3">
+                            <div class="form-group col-3 d-flex me-3">
+                              <p class="me-3">PM:</p>
+                              <select class="form-select" aria-label="Default select example" name="[pm][reason]" id="reasonInputAM<%= index %>" required>
+                                <option hidden selected value="<%= status.status.PM %>"><%= status.status.PM %> </option>
+                                <option value="UNKNOWN">UNKNOWN</option>
+                                <option value="MA">MEDICAL APPT</option>
+                                <option value="LEAVE">LEAVE</option>
+                                <option value="MC">MEDICAL LEAVE</option>
+                              </select>
+                            </div>
+                            <div class="input-group">
+                              <span class="input-group-text">PM Remarks</span>
+                              <textarea class="form-control" aria-label="With textarea" id="remarksInputAM<%= index %>" rows="1" name="[pm][remarks]"><%= status.status.pmRemarks %></textarea>
+                            </div>
+                          </div>
+                          <hr>
+                        </form>
+
+                      </div>
+                      <% }) %>
+                      <p></p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn alt-white-bg-button" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <!-- End NSF Tab -->
+    </div>
+    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+      <!-- Start Regular Tab -->
+      <div class="d-flex justify-content-evenly">
+        <table class="table table-striped text-light">
+          <thead class="text-dark">
+            <tr>
+              <th scope="col">Faculty</th>
+              <th scope="col">Name</th>
+              <th scope="col">HP Number</th>
+              <th scope="col">Statuses</th>
+              <th scope="col">Update</th>
+              <th scope="col">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% staffPersonnels.forEach(person => { %>
+            <form action="/admin/schoolPersonnels?_method=PATCH" method="POST">
+              <tr>
+                <td class="col-2">
+                  <select class="form-select" aria-label="<%= person._id %>Faculty" name="person[faculty]">
+                    <option selected><%= person.faculty %></option>
+                    <option value="SCIENCE">SCIENCE</option>
+                    <option value="HUMANITIES">HUMANITIES</option>
+                    <option value="ENGINEERING">ENGINEERING</option>
+                  </select>
+                </td>
+    
+                <td class="col-6">
+                  <input type="text" class="form-control uppercase" id="<%= person.name %>" minlength="0" value="<%= person.name %>" name="person[name]" required>
+                </td>
+
+                <td class="col-2">
+                  <input type="number" class="form-control" id="<%= person.hp %>" min="60000000" max="99999999" value="<%= person.hp %>" name="person[hp]" required>
+                </td>
+                <input hidden type="text" class="form-control" id="<%= person._id %>" value="<%= person._id %>" name="person[_id]">
+                <td><button type="button" class="btn white-bg-button" data-bs-toggle="modal" data-bs-target="#status<%= person._id %>">Status</button></td>
+                <td><button type="submit" class="btn white-bg-button">Update</button></td>
+                <td><button type="button" class="btn alt-white-bg-button" data-bs-toggle="modal" data-bs-target="#delete<%= person._id %>">Delete</button></td>
+              </tr>
+            </form>
+
+            <!-- Delete Modal -->
+            <form action="/admin/schoolPersonnels?_method=DELETE" method="POST">
+              <div class="modal fade" id="delete<%= person._id %>" tabindex="-1" aria-labelledby="delete<%= person._id %>Label" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="delete<%= person._id %>Label">Are you sure? All data will be gone!</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label for="<%= person._id %>" class="form-label">Enter <strong><%= person.name %></strong> user id: <strong><%= person._id %></strong> to delete</label>
+                        <input type="text" class="form-control" id="<%= person._id %>" placeholder="<%= person._id %>" minlength="8" required>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn white-bg-button" data-bs-dismiss="modal">Close</button>
+                      <input hidden type="text" class="form-control" id="<%= person._id %>" value="<%= person._id %>" name="person[_id]">
+                      <button type="submit" class="btn white-bg-button">Delete!</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            <!-- Status Modal -->
+            <div>
+              <div class="modal fade" id="status<%= person._id %>" tabindex="-1" aria-labelledby="status<%= person._id %>Label" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="status<%= person._id %>Label">Future Statuses</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <% person.statuses.forEach((status,index) => { %>
+                      <div>
+                        <form action="/staff/status" method="post">
+                          <div class="d-flex">
+                            <h5>Date: <%= status.date %></h5>
+                            <input type="text" value="<%= status._id %>" hidden name="_id">
+                            <button type="submit" class="mb-3 ms-auto btn white-bg-button">Update</button>
+                          </div>
+                          <!-- AM -->
+                          <div class="d-flex">
+                            <div class="form-group col-3 d-flex me-3">
+                              <p class="me-3">AM:</p>
+                              <select class="form-select" aria-label="Default select example" name="[am][reason]" id="reasonInputAM<%= index %>" required>
+                                <option hidden selected value="<%= status.status.AM %>"><%= status.status.AM %> </option>
+                                <option value="UNKNOWN">UNKNOWN</option>
+                                <option value="MA">MEDICAL APPT</option>
+                                <option value="LEAVE">LEAVE</option>
+                                <option value="MC">MEDICAL LEAVE</option>
+                              </select>
+                            </div>
+                            <div class="input-group">
+                              <span class="input-group-text">AM Remarks</span>
+                              <textarea class="form-control" aria-label="With textarea" id="remarksInputAM<%= index %>" rows="1" name="[am][remarks]"><%= status.status.amRemarks %></textarea>
+                            </div>
+                          </div>
+                          <!-- PM -->
+                          <div class="d-flex mt-3">
+                            <div class="form-group col-3 d-flex me-3">
+                              <p class="me-3">PM:</p>
+                              <select class="form-select" aria-label="Default select example" name="[pm][reason]" id="reasonInputAM<%= index %>" required>
+                                <option hidden selected value="<%= status.status.PM %>"><%= status.status.PM %> </option>
+                                <option value="UNKNOWN">UNKNOWN</option>
+                                <option value="MA">MEDICAL APPT</option>
+                                <option value="LEAVE">LEAVE</option>
+                                <option value="MC">MEDICAL LEAVE</option>
+                              </select>
+                            </div>
+                            <div class="input-group">
+                              <span class="input-group-text">PM Remarks</span>
+                              <textarea class="form-control" aria-label="With textarea" id="remarksInputAM<%= index %>" rows="1" name="[pm][remarks]"><%= status.status.pmRemarks %></textarea>
+                            </div>
+                          </div>
+                          <hr>
+                        </form>
+
+                      </div>
+                      <% }) %>
+                      <p></p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn alt-white-bg-button" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <!-- End Regular Tab -->
+    </div>
+  </div>
+  <a href="/<%= type %>">
+    <button class="btn btn-outline-light menuButton w-100 mt-5" type="button">Back</button>
+  </a>
+</div>
+
+
+  <div class="row">
+    &nbsp;
+  </div>
+
+
+</main>
+
+<script>
+  const uppercase = (obj) => {
+    obj.value = obj.value.toUpperCase()
+  }
+</script>

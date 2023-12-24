@@ -1,0 +1,105 @@
+<style>
+  .nameInput {
+    text-transform: uppercase;
+  }
+</style>
+
+<%- include("../partials/header") %>
+
+<main class="container">
+
+  <div class="hstack gap-3 m-3">
+    <a href="/<%= type %>">
+      <button class="btn island-button">Back</button>
+    </a>
+    </div>
+
+  <form class="container w-100" action="/<%= type %>/overallStatus" id="form">
+    <div class="card">
+
+
+    <div class="row">
+      <div class="col-3">
+        <div class="form-floating mb-3 dropdown">
+          <input type="text" class="form-control glow dropdown-toggle nameInput" onkeyup="filterNames()" data-bs-toggle="dropdown" aria-expanded="false" id="floatingInput" placeholder="name" name="name">
+          <label for="floatingInput">Name</label>
+          <ul class="dropdown-menu">
+            <% personnels.forEach(person => { %>
+            <li class="list-group-item">
+              <span class="dropdown-item-text nameList" id="<%= person.name %>" onclick="setNameInput(this)"><%= person.name %></span>
+            </li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+      <div class="col-3">
+        <select class="form-select glow" aria-label="Default select example">
+          <option selected>Select by faculty</option>
+          <option value="1">Science</option>
+          <option value="2">Humanities</option>
+          <option value="3">Engineering</option>
+        </select>
+      </div>
+      <div class="col-2 text-light">
+        <label for="startDate">Start:</label>
+        <input type="date" id="startDate" name="startDate">
+      </div>
+      <div class="col-2 text-light">
+        <label for="endDate">End:</label><br>
+        <input type="date" id="endDate" name="endDate">
+      </div>
+      <button type="submit" class="btn btn-primary col-2 h-50">Submit</button>
+    </div>
+  </form>
+  <% if (personnels.length == 1) { %>
+  <table class="table text-light">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <% statuses.forEach(status => { %>
+        <th scope="col" class="text-center"><%= status.title %> </th>
+        <% }) %>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><%= personnels[0].name %> </td>
+        <% statuses.forEach(status => { %>
+        <td class="text-center"><%= status.count %> </td>
+        <% }) %>
+      </tr>
+    </tbody>
+  </table>
+  <% } %>
+</div>
+</main>
+
+<script>
+  const filterNames = () => {
+    const inputName = document.querySelector('.nameInput').value.toUpperCase()
+    let allNames = []
+    document.querySelectorAll('.nameList').forEach((person) => {
+      allNames.push(person.innerText)
+    })
+    allNames.filter((name) => {
+      if (!name.match(inputName)) {
+        document.getElementById(name).setAttribute('hidden', "")
+      } else {
+        document.getElementById(name).removeAttribute('hidden')
+      }
+    })
+  }
+
+  const setNameInput = (el) => {
+    let setName = document.querySelector('.nameInput')
+    setName.value = el.innerText
+
+    document.querySelectorAll('.nameList').forEach((person) => {
+      if (person.innerText != setName) {
+        document.getElementById(person.innerText).setAttribute('hidden', "")
+      } else {
+        document.getElementById(person.innerText).removeAttribute('hidden')
+      }
+    })
+  }
+</script>

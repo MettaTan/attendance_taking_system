@@ -1,0 +1,304 @@
+<%- include("../partials/header") %>
+
+<style>
+  .upper {
+    text-transform: uppercase;
+  }
+</style>
+
+<main class="container-xl">
+  <% personnels.forEach(el => { %>
+  <h5 class="names" hidden><%= el.name %></h5>
+  <% }) %>
+  <div class="hstack gap-3 mt-3">
+    <a href="/<%= type %>">
+      <button class="btn island-button">Back</button>
+    </a>
+    <button type="button" class="btn island-button" onclick="addForecastPanel()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+      </svg>
+      Add Status
+    </button>
+    <button type="button" class="btn island-button" onclick="submitFormPanelForm()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+        <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+      </svg>
+      Submit Forecast
+    </button>
+  </div>
+  <form class="mt-5" action="/<%= type %>/forecast" method="post" id="forecastPanelForm">
+    <div id="forecastPanel">
+      <!-- Insert adjacent HTML here -->
+
+    </div>
+  </form>
+</main>
+
+<script>
+  const newForecastPanels = []
+
+  const allNames = [];
+  document.querySelectorAll('.names').forEach((name) => allNames.push(name.innerText))
+
+  const filterNames = (index) => {
+    // Render Name List
+    let allNamesHTML = ``
+    allNames.forEach(name => allNamesHTML += `<span class="dropdown-item-text names${index}" onclick="setNameInput(this,${index})">${name}</span>`);
+    document.getElementById(`nameList${index}`).innerHTML = allNamesHTML
+
+    // Uppercase name and store into newForecastPanels
+    const inputName = document.querySelector(`.nameInput${index}`).value.toUpperCase()
+    newForecastPanels[index].name = inputName
+
+    // Get all names array and hide it if dont match name input
+    const allNamesHTMLArr = []
+    document.querySelectorAll(`.names${index}`).forEach((nameHTML) => allNamesHTMLArr.push(nameHTML))
+    allNamesHTMLArr.filter((name) => {
+      if (!name.innerText.match(inputName)) {
+        name.setAttribute("hidden", "")
+      } else {
+        name.removeAttribute("hidden")
+      }
+    })
+  }
+
+  const setNameInput = (el, index) => {
+    let setName = document.getElementById(`floatingInput${index}`)
+    setName.value = el.innerText
+    newForecastPanels[index].name = setName.value
+  }
+
+  const setRemarks = (el, ampm, index) => newForecastPanels[index][ampm].remarks = el.value
+  const setReason = (el, ampm, index) => newForecastPanels[index][ampm].reason = el.value
+
+  const setDate = (el, index, status) => {
+    switch (status) {
+      case "start":
+        newForecastPanels[index].start.date = el.value
+        break;
+      case "end":
+        newForecastPanels[index].end.date = el.value
+        break;
+    }
+  }
+  const setAmPm = (el, index, status) => {
+    switch (status) {
+      case "start":
+        newForecastPanels[index].start.ampm = el.value
+        break;
+      case "end":
+        newForecastPanels[index].end.ampm = el.value
+        break;
+    }
+  }
+
+  const checkRadio = () => {
+    newForecastPanels.forEach((panel, index) => {
+      const start = panel.start.ampm
+      switch (start) {
+        case "am":
+          document.getElementById(`startAm${index}`).setAttribute('checked', "")
+          break;
+        case "pm":
+          document.getElementById(`startPm${index}`).setAttribute('checked', "")
+          break
+      }
+
+      const end = panel.end.ampm
+      switch (end) {
+        case "am":
+          document.getElementById(`endAm${index}`).setAttribute('checked', "")
+          break;
+        case "pm":
+          document.getElementById(`endPm${index}`).setAttribute('checked', "")
+          break
+      }
+    });
+  }
+
+  const addForecastPanel = () => {
+    const newForecastEntry = {
+      name: "",
+      am: {
+        remarks: "",
+        reason: "Choose a reason",
+      },
+      pm: {
+        remarks: "",
+        reason: "Choose a reason"
+      },
+      start: {
+        date: "",
+        ampm: "am"
+      },
+      end: {
+        date: "",
+        ampm: "pm"
+      },
+    }
+    newForecastPanels.push(newForecastEntry)
+    renderForecastPanels()
+  }
+
+  const deleteForecastPanel = (index) => {
+    newForecastPanels.splice(index, 1)
+    renderForecastPanels()
+  }
+
+  const renderForecastPanels = () => {
+    let allNewForcasts = ``
+    newForecastPanels.forEach((panel, index) => {
+      allNewForcasts += `
+    <div class="card p-3 mb-3">
+      <div class="card-body" id="${index}">
+        <div class="row">
+          <div class="col-3">
+            <div class="form-floating mb-3 dropdown">
+              <input type="text" class="form-control glow dropdown-toggle nameInput${index} upper" onkeyup="filterNames(${index})" data-bs-toggle="dropdown" aria-expanded="false" id="floatingInput${index}" value="${panel.name}" placeholder="name" name="${index}[name]" autocomplete="off" >
+              <label for="floatingInput${index}">Name (start typing to show list)</label>
+              <ul class="dropdown-menu">
+                <li class="list-group-item" id="nameList${index}">
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-2 text-light">
+            <div>
+            <label for="startDate">Start:</label>
+            <input type="date" id="startDate${index}" name="${index}[start][date]" class="date" onchange="setDate(this,${index},'start')" value="${panel.start.date}">
+            </div>
+
+            <div class="btn-group w-100 mt-1" role="group" aria-label="Basic radio toggle button group">
+              <input type="radio" class="btn-check" name="${index}[start][ampm]" id="startAm${index}" autocomplete="off" value="am" onclick="setAmPm(this,${index},'start')">
+              <label class="btn btn-primary" for="startAm${index}">AM</label>
+
+              <input type="radio" class="btn-check" name="${index}[start][ampm]" id="startPm${index}" autocomplete="off" value="pm" onclick="setAmPm(this,${index},'start')">
+              <label class="btn btn-primary" for="startPm${index}">PM</label>
+            </div>
+          </div>
+
+          <div class="col-2 text-light">
+            <div>
+            <label for="endDate">End:</label>
+            <input type="date" id="endDate${index}" name="${index}[end][date]" class="date" onchange="setDate(this,${index},'end')" value="${panel.end.date}">
+            </div>
+            
+            <div class="btn-group w-100 mt-1" role="group" aria-label="Basic radio toggle button group">
+              <input type="radio" class="btn-check" name="${index}[end][ampm]" id="endAm${index}" autocomplete="off" value="am" onclick="setAmPm(this,${index},'end')">
+              <label class="btn btn-primary" for="endAm${index}">AM</label>
+              <input type="radio" class="btn-check" name="${index}[end][ampm]" id="endPm${index}" autocomplete="off" value="pm" onclick="setAmPm(this,${index},'end')">
+              <label class="btn btn-primary" for="endPm${index}">PM</label>
+            </div>
+          </div>
+
+          <div class="col-5">
+            <div class="d-flex">
+              <button type="button" class="btn btn-dark ms-auto" onclick="deleteForecastPanel(${index})">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="28" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+              </svg>
+            </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-4 text-light">
+          <div class="form-group col-6">
+            <div class="input-group">
+              <span class="input-group-text">AM Remarks</span>
+              <textarea class="form-control glow" aria-label="With textarea" id="remarksInputAM${index}" name="${index}[am][remarks]" onkeyup="setRemarks(this,'am',${index})">${panel.am.remarks}</textarea>
+            </div>
+          </div>
+
+          <div class="form-group col-3">
+            <label for="reasonInputAM${index}">Select an AM reason</label>
+            <select class="form-select glow" aria-label="Default select example" name="${index}[am][reason]" id="reasonInputAM${index}" value="${panel.am.reason}" required onchange="setReason(this,'am',${index})">
+              <option value="${panel.am.reason}" selected>${panel.am.reason}</option>
+              <option value="UNKNOWN">UNKNOWN</option>
+              <option value="MA">MEDICAL APPT</option>
+              <option value="LEAVE">LEAVE</option>
+              <option value="MC">MEDICAL LEAVE</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row mt-3 text-light">
+          <div class="form-group col-6">
+            <div class="input-group">
+              <span class="input-group-text">PM Remarks</span>
+              <textarea class="form-control glow" aria-label="With textarea" id="remarksInputPM${index}" name="${index}[pm][remarks]" onkeyup="setRemarks(this,'pm',${index})">${panel.pm.remarks}</textarea>
+            </div>
+          </div>
+
+          <div class="form-group col-3">
+            <label for="reasonInputPM${index}">Select a PM reason</label>
+            <select class="form-select glow" aria-label="Default select example" name="${index}[pm][reason]" id="reasonInputPM${index}" value="${panel.pm.reason}" required onchange="setReason(this,'pm',${index})">
+              <option value="${panel.pm.reason}" selected>${panel.pm.reason}</option>
+              <option value="UNKNOWN">UNKNOWN</option>
+              <option value="MA">MEDICAL APPT</option>
+              <option value="LEAVE">LEAVE</option>
+              <option value="MC">MEDICAL LEAVE</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    `
+    });
+    const forecastPanel = document.getElementById('forecastPanel').innerHTML = allNewForcasts
+    checkRadio()
+  }
+  addForecastPanel()
+
+  const renderError = (index, error) => {
+    const htmlError = `
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <strong>Error!</strong> You should check in on some of those fields below.
+      <p class="mb-0 text-dark">${error}</p>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>`
+    document.getElementById(index).insertAdjacentHTML("afterbegin", htmlError)
+  }
+
+  const forecastPanelForm = document.getElementById('forecastPanelForm')
+  const submitFormPanelForm = () => {
+    renderForecastPanels()
+    let error = false
+    newForecastPanels.forEach((panel, index) => {
+      const {
+        name,
+        start,
+        end,
+        am,
+        pm
+      } = panel
+
+      // Client side validation
+      const nameExist = allNames.filter(names => name == names)
+      if (nameExist.length == 0) {
+        renderError(index, "Name is incorrect, click on name after typing personnel name in")
+        error = true
+      }
+      if (start.date.length == 0) {
+        renderError(index, "Start date not provided")
+        error = true
+      }
+      if (end.date.length == 0) {
+        renderError(index, "End date not provided")
+        error = true
+      }
+      if (am.reason == "Choose a reason" || pm.reason == "Choose a reason") {
+        renderError(index, "Please choose UNKNOWN if no status")
+        error = true
+      }
+    });
+
+    if (!error) {
+      forecastPanelForm.submit()
+    }
+  }
+</script>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/styles/bootstrap.css">
+  <link rel="stylesheet" href="/styles/style.css">
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico"/>
+  <title>Mettacademy Attendance</title>
+</head>
+
+<body >
+  <%- body %>
+  <script src="/javascripts/bootstrap.bundle.js"></script>
+  <script src="/javascripts/moment-with-locales.js"></script>
+  <script src="/javascripts/moment-timezone-with-data.js"></script>
+  <script>
+    (() => {
+      'use strict'
+
+      // Fetch all the forms we want to apply custom Bootstrap validation styles to
+      const forms = document.querySelectorAll('.needs-validation')
+
+      // Loop over them and prevent submission
+      Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+
+          form.classList.add('was-validated')
+        }, false)
+      })
+    })()
+  </script>
+  <%- script %>
+  <script>
+    (function() {
+    
+      const idleDurationSecs = 300;    // X number of seconds
+      const redirectUrl = 'http://192.168.1.145:8080/landing/landing.html';  // Redirect idle users to this URL
+      let idleTimeout; // variable to hold the timeout, do not modify
+    
+      const resetIdleTimeout = function() {
+    
+        // Clears the existing timeout
+        if(idleTimeout) clearTimeout(idleTimeout);
+    
+        // Set a new idle timeout to load the redirectUrl after idleDurationSecs
+        idleTimeout = setTimeout(() => location.href = redirectUrl, idleDurationSecs * 1000);
+      };
+    
+      // Init on page load
+      resetIdleTimeout();
+    
+      // Reset the idle timeout on any of the events listed below
+      ['click', 'touchstart', 'mousemove'].forEach(evt => 
+        document.addEventListener(evt, resetIdleTimeout, false)
+      );
+    
+    })();
+  </script>
+</body>
+
+</html>
